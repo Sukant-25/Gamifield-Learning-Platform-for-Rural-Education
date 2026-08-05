@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AURA-Learn: Gamified Learning Platform for Rural Education. Bilingual study modules, math games, offline persistent database, and speech helpers.">
+    <title>AURA-Learn // Gamified Rural Education Platform</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+ ```````   <!-- App Container -->
+    <div class="app-container">
+        
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo-group">
+                    <span class="logo-icon">🎓</span>
+                    <h1 id="header-logo-title">AURA-Learn</h1>
+                </div>
+                <div class="offline-badge" id="offline-indicator">
+                    <span class="dot green"></span> <span id="lbl-status">Offline Cache Ready</span>
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <!-- Translation switch -->
+                <button class="header-btn" id="lang-toggle-btn">தமிழ்</button>
+                <!-- Theme Toggle -->
+                <button class="header-btn" id="theme-toggle-btn" title="Toggle Theme">🌙</button>
+                
+                <!-- Logged User HUD -->
+                <div class="user-hud" id="user-hud-panel" style="display: none;">
+                    <div class="hud-avatar-box">
+                        <img src="" alt="Avatar" id="hud-avatar-img" class="hud-avatar">
+                    </div>
+                    <div class="hud-info">
+                        <div class="hud-meta">
+                            <span class="hud-name" id="hud-username">Student</span>
+                            <span class="badge" id="hud-role-badge">Student</span>
+                        </div>
+                        <div class="hud-stats">
+                            <span class="hud-stat-item" title="Experience Points">⭐ <strong id="hud-xp">0</strong> XP</span>
+                            <span class="hud-stat-item" title="Coins">🪙 <strong id="hud-coins">0</strong></span>
+                            <span class="hud-stat-item" title="Current Level">🏆 Lvl <strong id="hud-level">1</strong></span>
+                        </div>
+                    </div>
+                    <button class="logout-btn" id="btn-logout" title="Logout">🚪</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Body Wrapper -->
+        <main class="main-content">
+            
+            <!-- 1. AUTHENTICATION & PORTAL CHOOSE SCREEN -->
+            <section class="auth-section active" id="sec-auth">
+                <div class="auth-card">
+                    <div class="auth-tabs">
+                        <button class="auth-tab active" id="tab-student-login">Student Login</button>
+                        <button class="auth-tab" id="tab-teacher-login">Teacher Login</button>
+                        <button class="auth-tab" id="tab-admin-login">Admin Login</button>
+                    </div>
+                    <div class="auth-body">
+                        <!-- Login Form -->
+                        <form id="auth-form" onsubmit="event.preventDefault();">
+                            <h2 id="auth-title">Student Portal Login</h2>
+                            <p class="auth-desc" id="auth-desc">Enter your credentials to enter your digital classroom.</p>
+                            
+                            <div class="form-group">
+                                <label for="auth-user" id="lbl-username">Username</label>
+                                <input type="text" id="auth-user" placeholder="e.g. arjun_maths" required autocomplete="username">
+                            </div>
+                            
+                            <div class="form-group" id="form-group-email" style="display: none;">
+                                <label for="auth-email">Email Address</label>
+                                <input type="email" id="auth-email" placeholder="teacher@school.org" autocomplete="email">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="auth-pass" id="lbl-password">Password</label>
+                                <input type="password" id="auth-pass" placeholder="••••••••" required autocomplete="current-password">
+                            </div>
+                            
+                            <div class="auth-actions">
+                                <button type="submit" class="btn btn-primary" id="btn-auth-submit">Enter Classroom</button>
+                                <button type="button" class="btn btn-secondary" id="btn-auth-toggle">New Student? Register</button>
+                            </div>
+                            
+                            <div class="auth-links">
+                                <a href="#" id="link-forgot-pass">Forgot Password?</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. STUDENT DASHBOARD -->
+            <section class="dashboard-section" id="sec-student">
+                <!-- Level HUD Bar -->
+                <div class="level-banner">
+                    <div class="lvl-number" id="lbl-lvl-title">Level 1</div>
+                    <div class="lvl-progress-outer">
+                        <div class="lvl-progress-inner" id="lvl-progress-bar" style="width: 0%"></div>
+                    </div>
+                    <div class="lvl-progress-text" id="lvl-progress-text">0 / 100 XP</div>
+                </div>
+
+                <!-- Nav Tabs Grid -->
+                <div class="dashboard-nav">
+                    <button class="dash-nav-btn active" id="nav-btn-modules">📚 Learning Modules</button>
+                    <button class="dash-nav-btn" id="nav-btn-games">🎮 Play Games</button>
+                    <button class="dash-nav-btn" id="nav-btn-leaderboard">🏆 Ranks & Badges</button>
+                    <button class="dash-nav-btn" id="nav-btn-shop">🛍️ Coin Shop</button>
+                </div>
+
+                <!-- Tab Panels -->
+                <div class="dash-tab-body">
+                    
+                    <!-- TAB 2.1: Study Modules -->
+                    <div class="dash-panel active" id="panel-modules">
+                        <!-- Daily challenges Widget -->
+                        <div class="challenges-card">
+                            <h3>📅 Daily Learning Tasks</h3>
+                            <div class="challenge-item" id="daily-challenge-1">
+                                <span class="status-box" id="daily-chk-1">⬜</span>
+                                <span class="ch-text" id="lbl-ch-1">Read 1 Science notes guide (Earn 30 XP)</span>
+                            </div>
+                            <div class="challenge-item" id="daily-challenge-2">
+                                <span class="status-box" id="daily-chk-2">⬜</span>
+                                <span class="ch-text" id="lbl-ch-2">Score 100% in a Mathematics Quiz (Earn 50 XP, 10 Coins)</span>
+                            </div>
+                        </div>
+
+                        <!-- Subjects Selector -->
+                        <div class="subject-row">
+                            <button class="subject-chip active" data-subject="maths">📐 Maths</button>
+                            <button class="subject-chip" data-subject="science">🔬 Science</button>
+                            <button class="subject-chip" data-subject="english">🔤 English</button>
+                        </div>
+
+                        <!-- Content Lists -->
+                        <div class="content-grid" id="student-lesson-grid">
+                            <!-- Populated dynamically via app.js -->
+                        </div>
+                    </div>
+
+                    <!-- TAB 2.2: Games Zone -->
+                    <div class="dash-panel" id="panel-games">
+                        <div class="games-grid">
+                            
+                            <!-- Game 1 Card: Math Farm -->
+                            <div class="game-card">
+                                <div class="game-media">🚜</div>
+                                <div class="game-content">
+                                    <h3 id="game-title-farm">Arithmetic Math Farm</h3>
+                                    <p id="game-desc-farm" class="game-desc">Answer mathematics questions to grow crops on your virtual farm! Avoid wrong answers to prevent crops from drying. Earn Coins & XP!</p>
+                                    <button class="btn btn-primary" id="btn-start-farm">Play Math Farm</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Game 2 Card: Word Builder -->
+                            <div class="game-card">
+                                <div class="game-media">🧩</div>
+                                <div class="game-content">
+                                    <h3 id="game-title-word">Bilingual Word Builder</h3>
+                                    <p id="game-desc-word" class="game-desc">Combine translated letters to spell English and Tamil keywords. Sharpens spelling skills and builds vocabulary! Earn Coins & XP!</p>
+                                    <button class="btn btn-primary" id="btn-start-word">Play Word Builder</button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Live Mini Game Area Container (hidden by default) -->
+                        <div class="active-game-area" id="active-game-container" style="display: none;">
+                            <div class="game-header">
+                                <h3 id="active-game-title">Active Game</h3>
+                                <button class="btn-close-game" id="btn-close-game">&times;</button>
+                            </div>
+                            <div class="game-screen" id="game-screen-area">
+                                <!-- Rendered dynamically by game engine scripts -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2.3: Leaderboards & Badges -->
+                    <div class="dash-panel" id="panel-leaderboard">
+                        <div class="cols-2">
+                            <!-- Left: Leaderboard -->
+                            <div class="leaderboard-card">
+                                <h3 id="title-lead-tbl">Regional School Ranks</h3>
+                                <table class="lead-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Student</th>
+                                            <th>XP Score</th>
+                                            <th>Badge Count</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="leaderboard-tbody">
+                                        <!-- Loaded dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Right: Badges Gallery -->
+                            <div class="badges-card">
+                                <h3 id="title-badge-tbl">Achievements Gallery</h3>
+                                <p class="section-desc" id="lbl-badge-desc">Unlock digital badges by achieving specific educational targets.</p>
+                                <div class="badges-grid" id="badges-gallery">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2.4: Shop Grid -->
+                    <div class="dash-panel" id="panel-shop">
+                        <div class="shop-header">
+                            <h3 id="lbl-shop-title">Unlock Special Avatars</h3>
+                            <p id="lbl-shop-desc">Spend your earned learning coins to buy fun animal character avatars!</p>
+                        </div>
+                        <div class="shop-grid" id="shop-items-grid">
+                            <!-- Populated dynamically via app.js -->
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 3. TEACHER DASHBOARD -->
+            <section class="dashboard-section" id="sec-teacher">
+                <div class="teacher-grid">
+                    
+                    <!-- Left: Control Panels -->
+                    <div class="teacher-controls-card">
+                        <div class="teacher-tabs">
+                            <button class="teacher-tab-btn active" id="t-btn-add-lesson">✍️ Add Study Lesson</button>
+                            <button class="teacher-tab-btn" id="t-btn-add-quiz">📝 Construct Quiz</button>
+                        </div>
+                        
+                        <!-- Panel A: Add Lesson Form -->
+                        <div class="teacher-panel-content active" id="t-panel-lesson">
+                            <form id="add-lesson-form" onsubmit="event.preventDefault();">
+                                <h3>Upload New Subject Notes</h3>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="less-subject">Subject</label>
+                                        <select id="less-subject">
+                                            <option value="maths">📐 Mathematics</option>
+                                            <option value="science">🔬 General Science</option>
+                                            <option value="english">🔤 English Grammar</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="less-type">Content Type</label>
+                                        <select id="less-type">
+                                            <option value="notes">📄 Study Notes & Text</option>
+                                            <option value="video">🎥 Video Lessons</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="less-title">Lesson Title (English)</label>
+                                        <input type="text" id="less-title" placeholder="e.g. Learning Fractions" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="less-title-ta">Lesson Title (Tamil)</label>
+                                        <input type="text" id="less-title-ta" placeholder="எ.கா. பின்னங்களைக் கற்றல்" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="less-content">Study notes content (English)</label>
+                                    <textarea id="less-content" rows="6" placeholder="Write comprehensive English study guide text here..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="less-content-ta">Study notes content (Tamil)</label>
+                                    <textarea id="less-content-ta" rows="6" placeholder="இங்கு தமிழ் பாடக் குறிப்பு உரையை விரிவாக எழுதவும்..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="less-video-url">Video Embed URL (Optional)</label>
+                                    <input type="url" id="less-video-url" placeholder="https://www.youtube.com/embed/demo">
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="btn-save-lesson">Save & Dispatch Lesson</button>
+                            </form>
+                        </div>
+                        
+                        <!-- Panel B: Add Quiz Form -->
+                        <div class="teacher-panel-content" id="t-panel-quiz">
+                            <form id="add-quiz-form" onsubmit="event.preventDefault();">
+                                <h3>Construct Interactive Quiz Question</h3>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="q-subject">Target Subject</label>
+                                        <select id="q-subject">
+                                            <option value="maths">📐 Mathematics</option>
+                                            <option value="science">🔬 General Science</option>
+                                            <option value="english">🔤 English Grammar</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="q-type">Question Type</label>
+                                        <select id="q-type">
+                                            <option value="mcq">Multiple Choice Question (MCQ)</option>
+                                            <option value="tf">True / False</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="q-text">Question Wording (English)</label>
+                                    <input type="text" id="q-text" placeholder="Write question details..." required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="q-text-ta">Question Wording (Tamil)</label>
+                                    <input type="text" id="q-text-ta" placeholder="கேள்வி விவரங்களை எழுதவும்..." required>
+                                </div>
+                                
+                                <!-- MCQ Options Inputs -->
+                                <div class="mcq-options-container" id="mcq-options-box">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label for="opt-a">Option A (Eng / Tamil)</label>
+                                            <input type="text" id="opt-a" value="Option 1 / விருப்பம் 1">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="opt-b">Option B (Eng / Tamil)</label>
+                                            <input type="text" id="opt-b" value="Option 2 / விருப்பம் 2">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="opt-c">Option C (Eng / Tamil)</label>
+                                            <input type="text" id="opt-c" value="Option 3 / விருப்பம் 3">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="opt-d">Option D (Eng / Tamil)</label>
+                                            <input type="text" id="opt-d" value="Option 4 / விருப்பம் 4">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="q-answer">Correct Answer Wording</label>
+                                    <input type="text" id="q-answer" placeholder="Must exactly match correct option wording above" required>
+                                    <span class="help">For True/False, write exactly 'True' or 'False'.</span>
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="btn-save-quiz">Append Quiz Question</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Right: Performance Monitoring Table -->
+                    <div class="teacher-reports-card">
+                        <div class="card-header">
+                            <h2>📊 Classroom Progress Tracker</h2>
+                            <button class="btn btn-secondary" id="btn-export-teacher-report">Generate Performance Report</button>
+                        </div>
+                        <div class="card-body">
+                            <table class="report-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Lvl</th>
+                                        <th>XP Points</th>
+                                        <th>Coins</th>
+                                        <th>Course Completed</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="teacher-students-tbody">
+                                    <!-- Populated dynamically via app.js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 4. ADMIN DASHBOARD -->
+            <section class="dashboard-section" id="sec-admin">
+                <div class="admin-grid">
+                    
+                    <!-- Analytics Panel -->
+                    <div class="admin-card card-analytics">
+                        <div class="card-header">
+                            <h2>📈 Platform Engagement Metrics</h2>
+                            <span class="live-tag">● Real-time Logs</span>
+                        </div>
+                        <div class="card-body canvas-container">
+                            <canvas id="admin-analytics-chart" width="450" height="220"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- User Management Panel -->
+                    <div class="admin-card card-users">
+                        <div class="card-header">
+                            <h2>👥 System User Directory</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="user-list-header">
+                                <button class="user-filter-btn active" id="btn-filter-students">Students</button>
+                                <button class="user-filter-btn" id="btn-filter-teachers">Teachers</button>
+                            </div>
+                            <div class="admin-user-table-box">
+                                <table class="admin-user-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Username</th>
+                                            <th>Role</th>
+                                            <th>Date Registered</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-users-tbody">
+                                        <!-- Loaded dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subjects Config and Audit Logs -->
+                    <div class="admin-card card-audit">
+                        <div class="card-header">
+                            <h2>🛡️ Audit Activity Log</h2>
+                            <button class="btn btn-secondary" id="btn-clear-logs">Clear Logs</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="audit-log-box" id="admin-audit-log">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer Notification alerts logger -->
+        <footer class="app-footer">
+            <div class="footer-left">
+                <span class="notif-bell">🔔</span>
+                <span class="notif-text" id="live-notification-text">AURA-Learn online. Welcome back, select your portal to begin learning!</span>
+            </div>
+            <div class="footer-right">
+                <span class="battery-mode">🔋 High Contrast Safe</span>
+            </div>
+        </footer>
+
+        <!-- MODAL 1: SYSTEM NOTIFICATIONS & LEVEL-UP CELEBRATION -->
+        <div class="modal" id="levelup-modal">
+            <div class="modal-content text-center congrat-modal">
+                <div class="confetti-effect">🎉 🏆 🌟 🎉</div>
+                <h2>LEVEL UP!</h2>
+                <h3 id="lvl-congrat-txt" style="color: var(--color-warning);">Level 2</h3>
+                <p id="lvl-congrat-desc">You are doing fantastic! Keep reading study guides and completing quizzes to collect coins and earn your certificate.</p>
+                <div class="reward-overlay-box">
+                    <span>🪙 Unlocked Reward: <strong>+50 Coins</strong></span>
+                </div>
+                <button class="btn btn-primary" id="btn-close-levelup">Awesome!</button>
+            </div>
+        </div>
+
+        <!-- MODAL 2: INTERACTIVE QUIZ DIALOG -->
+        <div class="modal" id="quiz-modal">
+            <div class="modal-content quiz-modal-content">
+                <div class="modal-header">
+                    <h2 id="quiz-modal-title">Subject Quiz Challenge</h2>
+                    <span id="quiz-timer" style="font-family: 'Outfit', sans-serif; font-weight: bold; color: var(--color-danger);">Timer: 30s</span>
+                </div>
+                <div class="modal-body">
+                    <!-- Progress Bar inside quiz -->
+                    <div class="quiz-progress-box">
+                        <span id="quiz-question-num">Question 1 of 5</span>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="quiz-progress-indicator" style="width: 20%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Question Display -->
+                    <div class="quiz-question-card">
+                        <p class="question-text" id="quiz-question-text">Question text goes here?</p>
+                        <div class="quiz-options-grid" id="quiz-options-container">
+                            <!-- Populated dynamically via javascript -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="btn-quit-quiz">Quit Quiz</button>
+                    <button class="btn btn-primary" id="btn-next-question" disabled>Next Question</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 3: COURSE CERTIFICATE -->
+        <div class="modal" id="certificate-modal">
+            <div class="modal-content cert-modal-content">
+                <div class="modal-header">
+                    <h2>🎓 Course Certificate Generated</h2>
+                    <button class="close-btn" id="btn-close-cert">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Print layout -->
+                    <div class="certificate-paper" id="printable-certificate">
+                        <div class="cert-border-outer">
+                            <div class="cert-border-inner">
+                                <span class="cert-academy">AURA-LEARN ACADEMY</span>
+                                <h2 class="cert-title">CERTIFICATE OF ACHIEVEMENT</h2>
+                                <p class="cert-presented">This is proudly presented to</p>
+                                <h3 class="cert-recipient" id="cert-recip-name">SUKANT S</h3>
+                                <p class="cert-details" id="cert-desc-text">for outstanding academic performance and successful completion of the coursework for</p>
+                                <h4 class="cert-course" id="cert-course-subject">MATHEMATICS (📐 கணிதம்)</h4>
+                                <div class="cert-footer-row">
+                                    <div class="cert-signature-box">
+                                        <div class="cert-sig-line">SUKANT S</div>
+                                        <span>Course Administrator</span>
+                                    </div>
+                                    
+                                    <!-- QR Code container -->
+                                    <div class="cert-qr-box">
+                                        <svg width="80" height="80" viewBox="0 0 80 80" class="qr-svg">
+                                            <!-- Standard matrix grid mockup representing QR code -->
+                                            <rect width="80" height="80" fill="#fff"/>
+                                            <!-- Top-left Finder Pattern -->
+                                            <rect x="5" y="5" width="20" height="20" fill="#000"/>
+                                            <rect x="8" y="8" width="14" height="14" fill="#fff"/>
+                                            <rect x="11" y="11" width="8" height="8" fill="#000"/>
+                                            <!-- Top-right Finder Pattern -->
+                                            <rect x="55" y="5" width="20" height="20" fill="#000"/>
+                                            <rect x="58" y="8" width="14" height="14" fill="#fff"/>
+                                            <rect x="61" y="11" width="8" height="8" fill="#000"/>
+                                            <!-- Bottom-left Finder Pattern -->
+                                            <rect x="5" y="55" width="20" height="20" fill="#000"/>
+                                            <rect x="8" y="58" width="14" height="14" fill="#fff"/>
+                                            <rect x="11" y="61" width="8" height="8" fill="#000"/>
+                                            <!-- Random alignment blocks mock QR matrix -->
+                                            <rect x="35" y="15" width="5" height="10" fill="#000"/>
+                                            <rect x="45" y="30" width="10" height="5" fill="#000"/>
+                                            <rect x="30" y="45" width="5" height="15" fill="#000"/>
+                                            <rect x="40" y="55" width="10" height="10" fill="#000"/>
+                                            <rect x="60" y="40" width="8" height="8" fill="#000"/>
+                                            <rect x="15" y="35" width="12" height="5" fill="#000"/>
+                                        </svg>
+                                        <span class="qr-verify-txt">SCAN TO VERIFY</span>
+                                    </div>
+                                    
+                                    <div class="cert-signature-box">
+                                        <div class="cert-sig-line">AURA-Learn</div>
+                                        <span>School Director</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions text-center">
+                        <button class="btn btn-primary" id="btn-print-certificate">🖨️ Print Certificate</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Web Application logic -->
+    <script src="app.js"></script>
+</body>
+</html>
